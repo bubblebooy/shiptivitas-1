@@ -20,6 +20,11 @@ export default class Board extends React.Component {
       inProgress: React.createRef(),
       complete: React.createRef(),
     }
+    this.cardClass = {
+      backlog: "Card-grey",
+      inProgress: "Card-blue",
+      complete: "Card-green",
+    }
   }
   getClients() {
     return [
@@ -54,6 +59,32 @@ export default class Board extends React.Component {
     return (
       <Swimlane name={name} clients={clients} dragulaRef={ref}/>
     );
+  }
+
+  componentDidMount = () => {
+    Dragula([this.swimlanes.backlog.current, this.swimlanes.inProgress.current, this.swimlanes.complete.current])
+    .on('drop',this.onDropHandler)
+  }
+
+  onDropHandler = (el , target , source) => {
+    if (target !== source){
+      let targetLane = Object.keys(this.swimlanes)[Object.values(this.swimlanes).findIndex((lane)=>lane.current === target)]
+      let sourceLane = Object.keys(this.swimlanes)[Object.values(this.swimlanes).findIndex((lane)=>lane.current === source)]
+      el.classList.remove(this.cardClass[sourceLane])
+      el.classList.add(this.cardClass[targetLane])
+
+      // let sourceLane = Object.keys(this.swimlanes)[Object.values(this.swimlanes).findIndex((lane)=>lane.current === source)]
+      // let targetLane = Object.keys(this.swimlanes)[Object.values(this.swimlanes).findIndex((lane)=>lane.current === target)]
+      // let clients = {...this.state.clients}
+      // clients[sourceLane] = [...clients[sourceLane]]
+      // clients[targetLane] = [...clients[targetLane]]
+      // let clientIndex = clients[sourceLane].findIndex((c) => c.id === el.getAttribute("data-id"))
+      // let client = {...clients[sourceLane][clientIndex]}
+      // client.status = targetLane
+      // clients[sourceLane].splice(clientIndex)
+      // clients[targetLane].push(client)
+      // this.setState({clients: clients})
+    }
   }
 
   render() {
